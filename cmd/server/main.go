@@ -1,15 +1,19 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
+	"github.com/merteldem1r/TaskeFlow-API/internal/app"
 	"github.com/merteldem1r/TaskeFlow-API/internal/config"
 )
 
 func main() {
 	cfg := config.Load()
+	application := app.NewApp(cfg)
 
-	fmt.Println(cfg.AppName, "is starting...")
-	fmt.Println("Server will run on port: ", cfg.Port)
-	fmt.Println("Connecting to database at", cfg.DBHost, "on port", cfg.DBPort)
+	err := application.Run()
+
+	if err != nil {
+		log.Fatal("Server failed to start", err)
+	}
 }
