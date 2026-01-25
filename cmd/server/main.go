@@ -1,22 +1,11 @@
 package main
 
-import (
-	"database/sql/driver"
-	"log"
-)
+import "fmt"
 
 func main() {
-	conn, err := connect()
+	appName := "TaskeFlow API"
+	port := 8080
 
-	if err != nil {
-		log.Fatalf("failed to connect to ClickHouse: %v", err)
-	}
-
-	defer conn.Close()
-	log.Println("Successfully connected to ClickHouse")
-}
-
-func connect() (driver.Conn, error) {
-	// Placeholder for actual ClickHouse connection logic
-	return nil, nil
+	fmt.Println(appName, "is starting...")
+	fmt.Println("Server will run on port: ", port)
 }
