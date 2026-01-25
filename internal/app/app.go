@@ -2,32 +2,46 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/go-chi/chi/v5"
 	"github.com/merteldem1r/TaskeFlow-API/internal/config"
+	"github.com/merteldem1r/TaskeFlow-API/internal/database"
+	"github.com/merteldem1r/TaskeFlow-API/internal/handlers"
+	"github.com/merteldem1r/TaskeFlow-API/internal/repositories"
+	"github.com/merteldem1r/TaskeFlow-API/internal/routes"
+	"github.com/merteldem1r/TaskeFlow-API/internal/services"
 )
 
 type App struct {
 	Config *config.Config
 	Router *chi.Mux
+	DB     driver.Conn
 }
 
 func NewApp(cfg *config.Config) *App {
+	db, err := database.Connect(cfg)
+
+	if err != nil {
+		log.Fatal("Failed to connect ClickHouse database: ", err)
+	}
+
+	// Repositories and Services
+	taskRepo := repositories.NewTaskRepository(db)
+	taskService := services.NewTaskService(taskRepo)
+	taskHandler := handlers.NewTaskHandler(taskService)
+
 	app := &App{
 		Config: cfg,
 		Router: chi.NewRouter(),
+		DB:     db,
 	}
 
-	app.setupRoutes()
+	routes.Setup(app.Router, taskHandler)
 
 	return app
-}
-
-func (a *App) setupRoutes() {
-	a.Router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("OK"))
-	})
 }
 
 func (a *App) Run() error {

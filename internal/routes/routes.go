@@ -1,19 +1,18 @@
 package routes
 
 import (
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/merteldem1r/TaskeFlow-API/internal/handlers"
 )
 
-func Setup(r *chi.Mux) {
+func Setup(r *chi.Mux, taskHandler *handlers.TaskHandler) {
 	// Built-in Chi middlewares
 	r.Use(middleware.Logger)    // Logs every request
 	r.Use(middleware.Recoverer) // Recovers from panics
 
 	// handlers
 	healthHandler := handlers.NewHealthHandler()
-	taskHandler := handlers.NewTaskHandler()
 
 	r.Get("/health", healthHandler.Check)
 

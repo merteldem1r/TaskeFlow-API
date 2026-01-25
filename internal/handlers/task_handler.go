@@ -5,22 +5,28 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/merteldem1r/TaskeFlow-API/internal/services"
 )
 
 type TaskHandler struct {
+	Service *services.TaskService
 	// Later: TaskService will be injected here
 }
 
-func NewTaskHandler() *TaskHandler {
-	return &TaskHandler{}
+func NewTaskHandler(service *services.TaskService) *TaskHandler {
+	return &TaskHandler{Service: service}
 }
 
 func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	// TODO: Get from the service/database
-	response := map[string]string{"message": "Get all tasks"}
+	tasks, err := h.Service.GetAllTasks(r.Context())
+
+	if err != nil {
+		http.Error(w, "Failed to fetch tasks", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(tasks)
 }
 
 func (h *TaskHandler) GetByID(w http.ResponseWriter, r *http.Request) {
