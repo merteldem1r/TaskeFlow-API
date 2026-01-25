@@ -37,6 +37,10 @@ func (r *TaskRepository) GetAll(ctx context.Context) ([]*models.Task, error) {
 		tasks = append(tasks, &t)
 	}
 
+	if tasks == nil {
+		tasks = []*models.Task{}
+	}
+
 	return tasks, nil
 }
 

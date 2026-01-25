@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/merteldem1r/TaskeFlow-API/internal/services"
+	"github.com/merteldem1r/TaskeFlow-API/internal/utils"
 )
 
 type TaskHandler struct {
@@ -21,12 +22,18 @@ func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	tasks, err := h.Service.GetAllTasks(r.Context())
 
 	if err != nil {
-		http.Error(w, "Failed to fetch tasks", http.StatusInternalServerError)
+		utils.JSON(w, http.StatusInternalServerError, utils.APIResponse{
+			Status: "error",
+			Error:  "Failed to fetch tasks",
+		})
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tasks)
+	utils.JSON(w, http.StatusOK, utils.APIResponse{
+		Status: "success",
+		Data:   tasks,
+		Count:  len(tasks),
+	})
 }
 
 func (h *TaskHandler) GetByID(w http.ResponseWriter, r *http.Request) {

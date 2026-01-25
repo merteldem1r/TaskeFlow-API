@@ -1,12 +1,14 @@
-POST   /auth/register
-POST   /auth/login
+## TaskeFlow Clean Architecture Golang + ClickHouse
 
-GET    /users          (admin only)
-GET    /users/:id      (admin or own profile)
-DELETE /users/:id      (admin only)
+POST /auth/register
+POST /auth/login
 
-GET    /tasks          (admin: all, user: own)
-POST   /tasks
-GET    /tasks/:id
-PUT    /tasks/:id
+GET /users (admin only)
+GET /users/:id (admin or own profile)
+DELETE /users/:id (admin only)
+
+GET /tasks (admin: all, user: own)
+POST /tasks
+GET /tasks/:id
+PUT /tasks/:id
 DELETE /tasks/:id
