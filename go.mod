@@ -2,11 +2,13 @@ module github.com/merteldem1r/TaskeFlow-API
 
 go 1.25.5
 
-require github.com/go-chi/chi/v5 v5.2.4
+require (
+	github.com/ClickHouse/clickhouse-go/v2 v2.42.0
+	github.com/go-chi/chi/v5 v5.2.4
+)
 
 require (
 	github.com/ClickHouse/ch-go v0.69.0 // indirect
-	github.com/ClickHouse/clickhouse-go/v2 v2.42.0 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/go-faster/city v1.0.1 // indirect

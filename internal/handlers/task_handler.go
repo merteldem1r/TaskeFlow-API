@@ -3,8 +3,11 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+	"github.com/merteldem1r/TaskeFlow-API/internal/models"
 	"github.com/merteldem1r/TaskeFlow-API/internal/services"
 	"github.com/merteldem1r/TaskeFlow-API/internal/utils"
 )
@@ -49,11 +52,43 @@ func (h *TaskHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
-	response := map[string]string{"message": "Create task"}
+	// TODO: get user id from the response user payload
+	var input struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		UserID      string `json:"user_id"`
+	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(response)
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		utils.JSON(w, http.StatusBadRequest, utils.APIResponse{
+			Status: "error",
+			Error:  "Invalid request body",
+		})
+		return
+	}
+
+	task := &models.Task{
+		ID:          uuid.New().String(),
+		Title:       input.Title,
+		Description: input.Description,
+		Status:      models.TaskStatusPending,
+		UserID:      input.UserID,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	if err := h.Service.CreateTask(r.Context(), task); err != nil {
+		utils.JSON(w, http.StatusInternalServerError, utils.APIResponse{
+			Status: "error",
+			Error:  "Failed to create task",
+		})
+		return
+	}
+
+	utils.JSON(w, http.StatusCreated, utils.APIResponse{
+		Status: "success",
+		Data:   task,
+	})
 }
 
 func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
