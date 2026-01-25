@@ -1,11 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/merteldem1r/TaskeFlow-API/internal/config"
+)
 
 func main() {
-	appName := "TaskeFlow API"
-	port := 8080
+	cfg := config.Load()
 
-	fmt.Println(appName, "is starting...")
-	fmt.Println("Server will run on port: ", port)
+	fmt.Println(cfg.AppName, "is starting...")
+	fmt.Println("Server will run on port: ", cfg.Port)
+	fmt.Println("Connecting to database at", cfg.DBHost, "on port", cfg.DBPort)
 }
