@@ -25,3 +25,12 @@ func (r *UserRepository) CreateUser(ctx context.Context, u *models.User) error {
 		u.ID, u.Email, u.Password, u.Role, u.CreatedAt, u.UpdatedAt,
 	)
 }
+
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
+	row := r.DB.QueryRow(ctx, "SELECT id, email, password, role, created_at, updated_at FROM users WHERE email = ?", email)
+	var user models.User
+	if err := row.Scan(&user.ID, &user.Email, &user.Password, &user.Role, &user.CreatedAt, &user.UpdatedAt); err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

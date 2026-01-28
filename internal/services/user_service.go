@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,6 +22,11 @@ func NewUserService(repo *repositories.UserRepository) *UserService {
 }
 
 func (s *UserService) Register(ctx context.Context, email, password, role string) (*models.User, error) {
+	existingUser, _ := s.Repo.FindByEmail(ctx, email)
+	if existingUser != nil {
+		return nil, errors.New("User with provided email already exists")
+	}
+
 	hashedPassword, err := utils.HashPassword(password)
 	if err != nil {
 		return nil, err
@@ -39,5 +45,16 @@ func (s *UserService) Register(ctx context.Context, email, password, role string
 		return nil, err
 	}
 
+	return user, nil
+}
+
+func (s *UserService) Authenticate(ctx context.Context, email, password string) (*models.User, error) {
+	user, err := s.Repo.FindByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	if !utils.CheckPasswordHash(password, user.Password) {
+		return nil, errors.New("invalid credentials")
+	}
 	return user, nil
 }

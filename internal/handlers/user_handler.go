@@ -38,7 +38,7 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.JSON(w, http.StatusInternalServerError, utils.APIResponse{
 			Status: "error",
-			Error:  "Failed to register user",
+			Error:  err.Error(),
 		})
 		return
 	}
@@ -50,5 +50,42 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
-	// Implementation for user login endpoint
+	var input struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		utils.JSON(w, http.StatusBadRequest, utils.APIResponse{
+			Status: "error",
+			Error:  "Invalid request payload",
+		})
+		return
+	}
+
+	user, err := h.Service.Authenticate(r.Context(), input.Email, input.Password)
+	if err != nil {
+		utils.JSON(w, http.StatusUnauthorized, utils.APIResponse{
+			Status: "error",
+			Error:  "Invalid email or password",
+		})
+		return
+	}
+
+	token, err := utils.GenerateJWT(user.ID, string(user.Role))
+	if err != nil {
+		utils.JSON(w, http.StatusInternalServerError, utils.APIResponse{
+			Status: "error",
+			Error:  "Failed to generate token",
+		})
+		return
+	}
+
+	utils.JSON(w, http.StatusOK, utils.APIResponse{
+		Status: "success",
+		Data: map[string]interface{}{
+			"token": token,
+			"user":  user,
+		},
+	})
 }
