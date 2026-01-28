@@ -6,7 +6,7 @@ import (
 	"github.com/merteldem1r/TaskeFlow-API/internal/handlers"
 )
 
-func Setup(r *chi.Mux, taskHandler *handlers.TaskHandler) {
+func Setup(r *chi.Mux, taskHandler *handlers.TaskHandler, userHandler *handlers.UserHandler) {
 	// Built-in Chi middlewares
 	r.Use(middleware.Logger)    // Logs every request
 	r.Use(middleware.Recoverer) // Recovers from panics
@@ -24,6 +24,10 @@ func Setup(r *chi.Mux, taskHandler *handlers.TaskHandler) {
 			r.Get("/{id}", taskHandler.GetByID)
 			r.Put("/{id}", taskHandler.Update)
 			r.Delete("/{id}", taskHandler.Delete)
+		})
+		r.Route("/users", func(r chi.Router) {
+			r.Post("/register", userHandler.Register)
+			r.Post("/login", userHandler.Login)
 		})
 	})
 }

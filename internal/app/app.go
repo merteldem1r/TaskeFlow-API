@@ -29,9 +29,16 @@ func NewApp(cfg *config.Config) *App {
 	}
 
 	// Repositories and Services
+
+	// Task
 	taskRepo := repositories.NewTaskRepository(db)
 	taskService := services.NewTaskService(taskRepo)
 	taskHandler := handlers.NewTaskHandler(taskService)
+
+	// User
+	userRepo := repositories.NewUserRepository(db)
+	userService := services.NewUserService(userRepo)
+	userHandler := handlers.NewUserHandler(userService)
 
 	app := &App{
 		Config: cfg,
@@ -39,7 +46,7 @@ func NewApp(cfg *config.Config) *App {
 		DB:     db,
 	}
 
-	routes.Setup(app.Router, taskHandler)
+	routes.Setup(app.Router, taskHandler, userHandler)
 
 	return app
 }
