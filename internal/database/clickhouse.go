@@ -16,7 +16,6 @@ func Connect(cfg *config.Config) (driver.Conn, error) {
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{fmt.Sprintf("%s:%d", cfg.DBHost, cfg.DBPort)},
 		Auth: clickhouse.Auth{
-			Database: cfg.DBName,
 			Username: "default",
 			Password: "",
 		},

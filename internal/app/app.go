@@ -7,7 +7,6 @@ import (
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 	"github.com/merteldem1r/TaskeFlow-API/internal/config"
 	"github.com/merteldem1r/TaskeFlow-API/internal/database"
 	"github.com/merteldem1r/TaskeFlow-API/internal/handlers"
@@ -23,7 +22,6 @@ type App struct {
 }
 
 func NewApp(cfg *config.Config) *App {
-	_ = godotenv.Load()
 	db, err := database.Connect(cfg)
 
 	if err != nil {
