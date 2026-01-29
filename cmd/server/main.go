@@ -11,6 +11,8 @@ import (
 func main() {
 	_ = godotenv.Load()
 	cfg := config.Load()
+
+	log.Println("Database migrated successfully.")
 	application := app.NewApp(cfg)
 
 	err := application.Run()
