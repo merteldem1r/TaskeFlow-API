@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/merteldem1r/TaskeFlow-API/internal/middlewares"
 	"github.com/merteldem1r/TaskeFlow-API/internal/models"
 	"github.com/merteldem1r/TaskeFlow-API/internal/services"
 	"github.com/merteldem1r/TaskeFlow-API/internal/utils"
@@ -87,5 +88,30 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 			"token": token,
 			"user":  user,
 		},
+	})
+}
+
+func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middlewares.ContextUserID).(string)
+	if !ok {
+		utils.JSON(w, http.StatusUnauthorized, utils.APIResponse{
+			Status: "error",
+			Error:  "Unauthorized",
+		})
+		return
+	}
+
+	user, err := h.Service.GetByID(r.Context(), userID)
+	if err != nil {
+		utils.JSON(w, http.StatusInternalServerError, utils.APIResponse{
+			Status: "error",
+			Error:  "Failed to retrieve user",
+		})
+		return
+	}
+
+	utils.JSON(w, http.StatusOK, utils.APIResponse{
+		Status: "success",
+		Data:   user,
 	})
 }

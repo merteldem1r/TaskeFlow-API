@@ -31,12 +31,12 @@ func NewApp(cfg *config.Config) *App {
 	// Repositories and Services
 
 	// Task
-	taskRepo := repositories.NewTaskRepository(db)
+	taskRepo := repositories.NewTaskRepository(db, cfg.DBName)
 	taskService := services.NewTaskService(taskRepo)
 	taskHandler := handlers.NewTaskHandler(taskService)
 
 	// User
-	userRepo := repositories.NewUserRepository(db)
+	userRepo := repositories.NewUserRepository(db, cfg.DBName)
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 

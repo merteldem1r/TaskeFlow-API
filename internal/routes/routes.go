@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/merteldem1r/TaskeFlow-API/internal/handlers"
+	"github.com/merteldem1r/TaskeFlow-API/internal/middlewares"
 )
 
 func Setup(r *chi.Mux, taskHandler *handlers.TaskHandler, userHandler *handlers.UserHandler) {
@@ -19,6 +20,7 @@ func Setup(r *chi.Mux, taskHandler *handlers.TaskHandler, userHandler *handlers.
 	// API v1 routes group
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Route("/tasks", func(r chi.Router) {
+			r.Use(middlewares.JWTAuth)
 			r.Get("/", taskHandler.GetAll)
 			r.Post("/", taskHandler.Create)
 			r.Get("/{id}", taskHandler.GetByID)
@@ -28,6 +30,7 @@ func Setup(r *chi.Mux, taskHandler *handlers.TaskHandler, userHandler *handlers.
 		r.Route("/users", func(r chi.Router) {
 			r.Post("/register", userHandler.Register)
 			r.Post("/login", userHandler.Login)
+			r.With(middlewares.JWTAuth).Get("/me", userHandler.GetMe)
 		})
 	})
 }

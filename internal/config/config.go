@@ -20,7 +20,7 @@ func Load() *Config {
 		Port:      mustAtoi(os.Getenv("PORT")),
 		DBHost:    os.Getenv("DB_HOST"),
 		DBPort:    mustAtoi(os.Getenv("DB_PORT")),
-		DBName:    os.Getenv("DB_NAME"),
+		DBName:    os.Getenv("DB_APP_NAME"),
 		JWTSecret: os.Getenv("JWT_SECRET"),
 	}
 }

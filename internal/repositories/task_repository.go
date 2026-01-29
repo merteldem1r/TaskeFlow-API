@@ -2,22 +2,26 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/merteldem1r/TaskeFlow-API/internal/models"
 )
 
 type TaskRepository struct {
-	DB driver.Conn
+	DB     driver.Conn
+	DBName string
 }
 
-func NewTaskRepository(db driver.Conn) *TaskRepository {
-	return &TaskRepository{DB: db}
+func NewTaskRepository(db driver.Conn, dbName string) *TaskRepository {
+	return &TaskRepository{DB: db, DBName: dbName}
 }
 
 // Get all tasks
 func (r *TaskRepository) GetAll(ctx context.Context) ([]*models.Task, error) {
-	rows, err := r.DB.Query(ctx, "SELECT id, title, description, status, user_id, created_at, updated_at FROM tasks")
+	query := fmt.Sprintf("SELECT id, title, description, status, user_id, created_at, updated_at FROM %s.tasks", r.DBName)
+
+	rows, err := r.DB.Query(ctx, query)
 
 	if err != nil {
 		return nil, err
@@ -45,10 +49,12 @@ func (r *TaskRepository) GetAll(ctx context.Context) ([]*models.Task, error) {
 }
 
 func (r *TaskRepository) Create(ctx context.Context, t *models.Task) error {
+	query := fmt.Sprintf(`INSERT INTO %s.tasks (id, title, description, status, user_id, created_at, updated_at)
+		 VALUES (?, ?, ?, ?, ?, ?, ?)`, r.DBName)
+
 	return r.DB.Exec(
 		ctx,
-		`INSERT INTO tasks (id, title, description, status, user_id, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+		query,
 		t.ID, t.Title, t.Description, t.Status, t.UserID, t.CreatedAt, t.UpdatedAt,
 	)
 }
